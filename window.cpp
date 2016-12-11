@@ -33,7 +33,7 @@ static void draw(void);
 static void quit(void);
 
 /*!\brief dimensions de la fenêtre */
-static GLfloat _dim[] = {640, 480};
+static GLfloat _dim[] = {640, 480}; // 
 /*!\brief pointeur vers la (future) fenêtre SDL */
 static SDL_Window * _win = NULL;
 /*!\brief pointeur vers le (futur) contexte OpenGL */
@@ -48,7 +48,7 @@ static GLuint _pId = 0;
 static GLuint _tId[2] = {0};
 /*!\brief device de capture vidéo */
 static VideoCapture * _cap = NULL;
-
+/*!\brief Variable qui contient le fichier XML */
 CascadeClassifier * face_cc = NULL;
 
 /*!\brief La fonction principale initialise la bibliothèque SDL2,
@@ -100,7 +100,7 @@ static SDL_Window * initWindow(int w, int h, SDL_GLContext * poglContext) {
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-  if( (win = SDL_CreateWindow("GLSLExample", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
+  if( (win = SDL_CreateWindow("FaceSmiley", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
 			      w, h, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | 
 			      SDL_WINDOW_SHOWN)) == NULL )
     return NULL;
@@ -178,9 +178,9 @@ static void initData(void) {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_NEAREST);
+  
   Mat smiley;
   smiley = imread("mignonSmile.png", IMREAD_ANYCOLOR);
-  //flip(smiley, smiley, 1);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, smiley.cols, smiley.rows, 0, GL_BGR /* GL_BGRA*/, GL_UNSIGNED_BYTE, smiley.data);
 
   _cap = new VideoCapture(0);
@@ -197,63 +197,6 @@ static void initData(void) {
   _cap->set(CV_CAP_PROP_FRAME_WIDTH,  (int)_dim[0]);
   _cap->set(CV_CAP_PROP_FRAME_HEIGHT, (int)_dim[1]);
 }
-
-/*
-
-void FlipVertically(SDL_Surface *tex){
-  unsigned int size = tex->pitch;
-  char *data = NULL;
-  char *a = NULL, *b = NULL;
- 
-  data =  (char*) malloc(size);
-  assert(data);
- 
-  a = (char*)tex->pixels;
-  b = (char*)tex->pixels + size*(tex->h-1);
-   
-  while(a < b){
-    memcpy(data, a, size); 
-    memcpy(a, b ,size);  
-    memcpy(b, data, size); 
-    a += size; b -= size;
-  }
-  free(data);
-}
-
-  if( (t = IMG_Load(img[i])) != NULL ) {
- 
-      rwop=SDL_RWFromFile(img[i], "rb");
-   
-      //Si l'image est en JPEG ou PNG, il faut inverser
-      if (IMG_isJPG(rwop) || IMG_isBMP(rwop) || IMG_isPNG(rwop)) ShouldBeFlipped = 1;
-     
-      if (ShouldBeFlipped) //invert_surface_vertical(texSurface); 
-    FlipVertically(t); 
-      if (t->format->BytesPerPixel == 3){
-    if (sign * t->format->Rshift > sign * t->format->Bshift)
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, t->w, t->h, 0, GL_RGB, GL_UNSIGNED_BYTE, t->pixels);
-    else
-      glTexImage2D(GL_TEXTURE_2D, 0,  GL_RGB, t->w, t->h, 0, GL_BGR, GL_UNSIGNED_BYTE, t->pixels);
-      }
- 
-      if (t->format->BytesPerPixel == 4){
-    if (sign * t->format->Rshift > sign * t->format->Bshift)
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, t->w, t->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, t->pixels);
-    else
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, t->w, t->h, 0, GL_BGRA, GL_UNSIGNED_BYTE, t->pixels);
-      }
- 
- 
-      //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, t->w, t->h, 0, GL_RGB, GL_UNSIGNED_BYTE, t->pixels);
- 
-      SDL_FreeSurface(t);
-    } else {
-      fprintf(stderr, "Erreur lors du chargement de la texture\n");
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    }
-  }
-
- */
 
 /*!\brief Boucle infinie principale : gère les évènements, dessine,
  * imprime le FPS et swap les buffers.
@@ -317,7 +260,7 @@ static void manageEvents(SDL_Window * win) {
 static void draw(void) {
   Mat ci, gsi;
   const GLfloat blanc[] = {1.0f, 1.0f, 1.0f, 1.0f};
-  const GLfloat bleu[]  = {0.5f, 0.5f, 1.0f, 1.0f};
+  //const GLfloat bleu[]  = {0.5f, 0.5f, 1.0f, 1.0f};
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glUseProgram(_pId);
   glEnable(GL_DEPTH_TEST);
@@ -330,17 +273,12 @@ static void draw(void) {
   vector<Rect> faces;
   cvtColor(ci, gsi, COLOR_BGR2GRAY);
 
-  // Détection du visage
-  face_cc->detectMultiScale(gsi, faces, 1.3, 5);
-  for (vector<Rect>::iterator fc = faces.begin(); fc != faces.end(); ++fc) {
-      rectangle(ci, (*fc).tl(), (*fc).br(), Scalar(255, 0, 0), 2, CV_AA);
-  }
-
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ci.cols, ci.rows, 0, GL_BGR, GL_UNSIGNED_BYTE, ci.data); //charger la capture dans texture
   glUniform1i(glGetUniformLocation(_pId, "myTexture"), 0);
   glUniform1f(glGetUniformLocation(_pId, "width"), _dim[0]);
   glUniform1f(glGetUniformLocation(_pId, "height"), _dim[1]);
-  /* streaming au fond */
+  
+  /* Streaming au fond */
   gl4duBindMatrix("modelviewMatrix");
   gl4duPushMatrix(); /* sauver modelview */
   gl4duLoadIdentityf();
@@ -354,7 +292,7 @@ static void draw(void) {
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); /* dessiner le streaming (ortho et au fond) */
   gl4duPopMatrix(); /* restaurer projection */
 
-  //on a fini de dessiner la capture, maintenant on dessine le smiley
+  // Dessin du smiley
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
   glActiveTexture(GL_TEXTURE1);
@@ -364,16 +302,32 @@ static void draw(void) {
   glUniform1f(glGetUniformLocation(_pId, "posy"), _dim[1]/* y */);
   gl4duBindMatrix("modelviewMatrix");
   gl4duPopMatrix(); /* restaurer modelview */
-  /* streaming tournant */
-  //agrandir le smiley
-  gl4duScalef(1/* coefx */, 1/* coefy */, 1);
-  //faire bouger le smiley
-  gl4duTranslatef(0/* x */, 0 /* y */, 0);
-  gl4duSendMatrices(); /* envoyer les matrices */
-  glUniform4fv(glGetUniformLocation(_pId, "couleur"), 1, bleu); /* envoyer une couleur */
-  glBindVertexArray(_vao);
-  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); /* dessiner le streaming sur le lointain (ici perspective liée à projection) plan tournant */
 
+
+  // Détection du visage et affichage du/des smiley(s)
+  face_cc->detectMultiScale(gsi, faces, 1.3, 5);
+  for (vector<Rect>::iterator fc = faces.begin(); fc != faces.end(); ++fc) {
+
+    /* Sauvegarde du modelview */
+    gl4duPushMatrix();
+
+    // Gestion du mouveament du smiley
+    gl4duTranslatef(3.4-((((*fc).x)/_dim[0])*10), 3.4-((((*fc).y)/_dim[1])*10), 0);
+
+    // Gestion de la taille du smiley 
+    gl4duScalef((*fc).width/72, (*fc).height/72, 1);
+        
+    // Affichage du X et Y (Pour debugage)
+    fprintf(stderr, "X = %d    Y = %d \n", (*fc).x, (*fc).y);
+
+    /* Envoie des matrices */
+    gl4duSendMatrices(); 
+    glBindVertexArray(_vao);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+    /* Restauration du modelview */
+    gl4duPopMatrix();
+  }
 }
 
 /*!\brief Cette fonction est appelée au moment de sortir du programme
@@ -385,6 +339,13 @@ static void quit(void) {
     delete _cap;
     _cap = NULL;
   }
+
+  if(face_cc) {
+    delete face_cc;
+    face_cc = NULL;
+  }
+
+
   if(_vao)
     glDeleteVertexArrays(1, &_vao);
   if(_buffer)
