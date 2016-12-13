@@ -3,7 +3,8 @@
  * \brief Utilisation de la SDL2/GL4Dummies et d'OpenGL 3+
  *
  * \author Farès BELHADJ, amsi@ai.univ-paris8.fr
- * \date April 24 2014
+ * \modified by Steve VANDYCKE & Ali BAYRACK
+ * \date April 24 2014 (modified December 12 2016)
  */
 #include <math.h>
 #include <stdio.h>
