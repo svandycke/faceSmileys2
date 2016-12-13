@@ -346,7 +346,6 @@ static void quit(void) {
     face_cc = NULL;
   }
 
-
   if(_vao)
     glDeleteVertexArrays(1, &_vao);
   if(_buffer)
