@@ -19,6 +19,10 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <objdetect.hpp>
 
+#include <SDL.h>
+#include <SDL_image.h>
+
+
 using namespace cv;
 using namespace std;
 /*
@@ -51,6 +55,8 @@ static GLuint _tId[2] = {0};
 static VideoCapture * _cap = NULL;
 /*!\brief Variable qui contient le fichier XML */
 CascadeClassifier * face_cc = NULL;
+
+SDL_Surface * image = IMG_Load("mignonSmile.png");
 
 /*!\brief La fonction principale initialise la bibliothèque SDL2,
  * demande la création de la fenêtre SDL et du contexte OpenGL par
@@ -182,7 +188,7 @@ static void initData(void) {
   
   Mat smiley;
   smiley = imread("mignonSmile.png", IMREAD_ANYCOLOR);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, smiley.cols, smiley.rows, 0, GL_BGR /* GL_BGRA*/, GL_UNSIGNED_BYTE, smiley.data);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->w, image->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->pixels);
 
   _cap = new VideoCapture(0);
   if(!_cap || !_cap->isOpened()) {

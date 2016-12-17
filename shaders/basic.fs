@@ -10,3 +10,5 @@ out vec4 fragColor;
 void main(void) {
   fragColor = texture(myTexture, vsoTexCoord.st);// * couleur;
 }
+
+

@@ -18,7 +18,7 @@ SDL_CFLAGS = $(shell sdl2-config --cflags)
 SDL_LDFLAGS = $(shell sdl2-config --libs)
 CPPFLAGS = -I. $(SDL_CFLAGS)
 CFLAGS = -Wall -O3
-LDFLAGS = -lm -lGL4Dummies $(SDL_LDFLAGS) -lopencv_highgui -lopencv_imgproc -lopencv_core -lopencv_objdetect 
+LDFLAGS = -lm -lGL4Dummies $(SDL_LDFLAGS) -lopencv_highgui -lopencv_imgproc -lopencv_core -lopencv_objdetect -lSDL2 -lSDL2_image
 
 UNAME := $(shell uname)
 ifeq ($(UNAME),Darwin)
